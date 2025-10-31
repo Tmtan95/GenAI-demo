@@ -21,16 +21,28 @@ except ImportError:
 def check_ollama_connection():
     """Check if Ollama is available and models are ready"""
     try:
-        models = ollama.list()
+        models_response = ollama.list()
         if COLORS_AVAILABLE:
             print(f"{Fore.GREEN}✓ Connected to Ollama service{Style.RESET_ALL}")
         else:
             print("✓ Connected to Ollama service")
         
+        # Handle both new Model object format and old dict format
+        if hasattr(models_response, 'models'):
+            models = models_response.models
+        else:
+            models = models_response.get('models', [])
+        
         # Check if phi3:mini model is available
         model_found = False
-        for model in models.get('models', []):
-            if 'phi3:mini' in model.get('name', ''):
+        for model in models:
+            # Handle Model object vs dict
+            if hasattr(model, 'model'):
+                model_name = model.model
+            else:
+                model_name = model.get('name', model.get('model', ''))
+            
+            if 'phi3:mini' in model_name:
                 model_found = True
                 break
         
