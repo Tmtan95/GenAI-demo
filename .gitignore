@@ -46,7 +46,7 @@ venv.bak/
 ehthumbs.db
 Thumbs.db
 
-# Model files (optional - comment out if you want to include models)
+# Model files (excluded - users download automatically)
 model/ollama_models/blobs/
 model/ollama_models/manifests/
 
