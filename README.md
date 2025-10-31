@@ -4,206 +4,151 @@
 [![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows-lightgrey.svg)]()
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-A cross-platform AI demonstration project using Ollama with the Phi-3 Mini model. Features automatic server management, graceful shutdown, and platform-specific optimizations for both macOS and Windows.
+A cross-platform AI chat application using Ollama with the Phi-3 Mini model. Features interactive ChatGPT-like conversations with platform-specific optimizations.
 
 ## 🚀 Features
 
-- ✅ **Cross-platform compatibility** (macOS, Windows)
-- ✅ **Automatic Ollama server management**
-- ✅ **Graceful startup and shutdown**
-- ✅ **Self-contained AI model storage**
-- ✅ **Enhanced Windows support** with colored output
-- ✅ **One-click launchers** for both platforms
-- ✅ **Robust error handling and cleanup**
+- 💬 **Interactive Chat**: ChatGPT-like conversation with memory
+- 🖥️ **Cross-platform**: Optimized for both macOS and Windows  
+- 🤖 **AI-Powered**: Uses Phi-3 Mini model via Ollama
+- 🎨 **Enhanced UI**: Colored output and professional interface
+- � **Document Analysis**: Coming soon - PDF-based instruction generation
 
-## 📋 Quick Start
-
-### Option 1: One-Click Launch
-- **macOS/Linux**: `./run-macos.sh`
-- **Windows**: Double-click `run-windows.bat`
-
-### Option 2: Manual Setup
-See detailed setup instructions below.
-
-## Files Structure
+## 📁 Project Structure
 ```
 GenAI-Demo/
 ├── app/
-│   ├── demo.py              # macOS/Linux optimized version
-│   └── demo-Win.py          # Windows optimized version
-├── model/
-│   └── ollama_models/       # Model storage directory
-├── env/                     # Python virtual environment
-├── requirements.txt         # Basic Python dependencies
-├── requirements-windows.txt # Windows-specific dependencies
-├── run-macos.sh            # One-click macOS launcher
-├── run-windows.bat         # One-click Windows launcher
-├── troubleshoot-windows.bat # Windows troubleshooting tool
+│   ├── demo.py              # macOS/Linux version (with server management)
+│   └── demo-Win.py          # Windows version (uses system Ollama)
+├── model/                   # Model storage (local only, not in git)
+├── requirements.txt         # Python dependencies
+├── requirements-windows.txt # Windows-enhanced dependencies  
 └── README.md               # This file
 ```
 
-## Prerequisites
+## 🔧 Setup
 
-### For macOS:
-1. **Install Ollama**: Download from [https://ollama.com](https://ollama.com)
-2. **Install Python 3.9+**: Use Homebrew or download from python.org
-3. **Install Xcode Command Line Tools** (if not already installed):
+### Prerequisites
+- **Python 3.9+** 
+- **Ollama** - Download from [ollama.com](https://ollama.com)
+
+### Installation
+
+1. **Clone the repository:**
    ```bash
-   xcode-select --install
+   git clone https://github.com/tmtan95/GenAI-Demo.git
+   cd GenAI-Demo
    ```
 
-### For Windows:
-1. **Install Ollama**: Download from [https://ollama.com](https://ollama.com)
-2. **Install Python 3.9+**: Download from [https://python.org](https://python.org)
-3. **Add Ollama to PATH**: Ensure `ollama.exe` is accessible from command line
-
-## Setup Instructions
-
-### macOS Setup:
-```bash
-# Navigate to project directory
-cd GenAI-Demo
-
-# Create virtual environment (if not exists)
-python3 -m venv env
-
-# Activate virtual environment
-source env/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Pull the AI model (will be stored in model/ollama_models/)
-ollama pull phi3:mini
-
-# Run the demo
-python app/demo.py
-```
-
-### Windows Setup:
-```cmd
-# Navigate to project directory
-cd GenAI-Demo
-
-# Create virtual environment (if not exists)
-python -m venv env
-
-# Activate virtual environment
-env\Scripts\activate
-
-# Install dependencies (Windows-optimized)
-pip install -r requirements-windows.txt
-
-# Pull the AI model (will be stored in model/ollama_models/)
-ollama pull phi3:mini
-
-# Run the Windows-optimized demo
-python app/demo-Win.py
-```
-
-## Key Differences Between Versions
-
-### demo.py (macOS/Linux):
-- Uses Unix-style process management
-- Optimized signal handling for POSIX systems
-- Faster startup times
-- Uses `terminate()` and `kill()` for process cleanup
-
-### demo-Win.py (Windows):
-- Uses Windows-specific process creation flags
-- Handles both Ctrl+C and Ctrl+Break interrupts
-- Uses `taskkill` command for reliable process termination
-- Longer startup timeouts to accommodate Windows behavior
-- Fallback mechanisms for different Windows configurations
-- **Enhanced features with Windows requirements:**
-  - Colored output with `colorama` (if installed)
-  - Advanced process management with `psutil` (if installed)
-  - Better error handling and user feedback
-
-## Troubleshooting
-
-### Windows-Specific Issues:
-
-**"Server not ready yet, waiting..." Error:**
-This is common on Windows due to slower startup times. Solutions:
-
-1. **Use the troubleshooting tool:**
+2. **Set up Python environment:**
+   
+   **macOS/Linux:**
+   ```bash
+   python3 -m venv env
+   source env/bin/activate
+   pip install -r requirements.txt
+   ```
+   
+   **Windows:**
    ```cmd
-   troubleshoot-windows.bat
+   python -m venv env
+   env\Scripts\activate
+   pip install -r requirements-windows.txt
    ```
 
-2. **Manual steps:**
-   - Ensure Ollama service is running: `ollama serve`
-   - Wait 15-30 seconds before running the demo
-   - Try running `ollama list` to verify connection
+3. **Install AI model:**
+   ```bash
+   ollama pull phi3:mini
+   ```
 
-3. **If still having issues:**
-   - Restart your computer
-   - Reinstall Ollama from [ollama.com](https://ollama.com)
-   - Make sure Windows Defender isn't blocking Ollama
+4. **Run the application:**
+   
+   **macOS/Linux:**
+   ```bash
+   python app/demo.py
+   ```
+   
+   **Windows:**
+   ```cmd
+   python app/demo-Win.py
+   ```
 
-### Common Issues:
+## 🖥️ Platform Differences
 
-1. **"ollama command not found"**
-   - **macOS**: Restart terminal after installing Ollama
-   - **Windows**: Add Ollama installation directory to PATH or reinstall Ollama
+### macOS/Linux (`demo.py`)
+- **Server Management**: Automatically starts/stops Ollama server
+- **Model Storage**: `GenAI-Demo/model/ollama_models/`
+- **Process Control**: Full lifecycle management
 
-2. **Model not found error**
-   - Run `ollama pull phi3:mini` to download the model
-   - Ensure the model directory exists: `model/ollama_models/`
+### Windows (`demo-Win.py`)  
+- **System Integration**: Uses system Ollama service
+- **Model Storage**: `C:/Users/.ollama/models/`
+- **Simplified Design**: No server management needed
 
-3. **Connection refused error**
-   - The program automatically starts Ollama server
-   - If issues persist, manually run: `ollama serve`
+## 🔍 Usage
 
-4. **Process not shutting down (Windows)**
-   - The Windows version uses `taskkill` for reliable cleanup
-   - If needed, manually kill with: `taskkill /F /IM ollama.exe`
+Both versions provide the same features:
 
-5. **Permission errors**
-   - **macOS**: Use `sudo` if needed for model directory access
-   - **Windows**: Run Command Prompt as Administrator
+1. **Interactive Chat** - ChatGPT-like conversation with context memory
+2. **Document Analysis** - Coming soon (PDF-based instruction generation)  
+3. **Clean Interface** - Professional menus and colored output
 
-## Features
+Navigate through options using the numbered menu system.
 
-Both versions include:
-- ✅ Automatic Ollama server management
-- ✅ Graceful startup and shutdown
-- ✅ Error handling and cleanup
-- ✅ Interrupt signal handling (Ctrl+C)
-- ✅ Model stored in project directory
-- ✅ Self-contained operation
+## ⚠️ Troubleshooting
 
-## Model Location
+### Model Issues
+```bash
+# Check if model exists
+ollama list
 
-The AI model is stored in your project directory:
-- **Location**: `GenAI-Demo/model/ollama_models/`
-- **Size**: ~2.2 GB for phi3:mini
-- **Benefit**: Portable with your project, no system-wide installation
+# Download model if missing  
+ollama pull phi3:mini
+```
 
-## Usage Examples
+### Connection Issues
+```bash
+# Ensure Ollama is running
+ollama serve
 
-Both programs will:
-1. Check if Ollama server is running
-2. Start server if needed
-3. Load the phi3:mini model
-4. Generate an AI response
-5. Cleanly shutdown the server
+# Test connection
+ollama list
+```
 
-You can modify the chat message in either file to customize the AI interaction.
+### Windows-Specific
+- Make sure Ollama is added to PATH
+- Try running as Administrator if needed
+- Restart Ollama service if connection fails
 
-## Windows-Specific Enhancements
+## 📦 Dependencies
 
-The `requirements-windows.txt` includes additional packages for better Windows experience:
+### Basic (`requirements.txt`)
+- `ollama==0.6.0` - Core AI functionality
 
-- **colorama**: Provides colored console output for better visual feedback
-- **psutil**: Enhanced process management for more reliable cleanup
-- **requests & urllib3**: Ensure compatibility with Windows networking
+### Windows Enhanced (`requirements-windows.txt`)  
+- `ollama==0.6.0` - Core AI functionality
+- `colorama==0.4.6` - Colored console output
+- `psutil==5.9.6` - Enhanced process management  
+- `requests==2.31.0` - HTTP reliability
+- `urllib3==2.0.7` - Network compatibility
 
-These packages are optional but recommended for the best Windows experience.
+## 📝 License
 
-## Support
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-- **macOS/Linux**: Use `demo.py` with `requirements.txt`
-- **Windows**: Use `demo-Win.py` with `requirements-windows.txt`
-- Both versions maintain the same functionality with platform-specific optimizations
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 🔮 Roadmap
+
+- [x] Interactive ChatGPT-like interface
+- [x] Cross-platform compatibility  
+- [x] Colored console output
+- [ ] PDF document analysis and instruction generation
+- [ ] Multiple AI model support
+- [ ] Web interface option

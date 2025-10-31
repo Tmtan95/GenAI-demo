@@ -1,10 +1,5 @@
 import ollama
-import subprocess
-import time
-import atexit
-import signal
 import sys
-import os
 
 # Windows-specific imports with fallbacks
 try:
@@ -23,184 +18,45 @@ except ImportError:
     class Style:
         RESET_ALL = ""
 
-try:
-    import psutil # type: ignore
-    PSUTIL_AVAILABLE = True
-except ImportError:
-    PSUTIL_AVAILABLE = False
-
-class OllamaManagerWindows:
-    def __init__(self):
-        self.ollama_process = None
-        self.started_by_us = False
-    
-    def ensure_ollama_running(self):
-        """Ensure Ollama server is running (Windows optimized)"""
-        try:
-            # Try to ping Ollama
-            ollama.list()
+def check_ollama_connection():
+    """Check if Ollama is available and models are ready"""
+    try:
+        models = ollama.list()
+        if COLORS_AVAILABLE:
+            print(f"{Fore.GREEN}✓ Connected to Ollama service{Style.RESET_ALL}")
+        else:
+            print("✓ Connected to Ollama service")
+        
+        # Check if phi3:mini model is available
+        model_found = False
+        for model in models.get('models', []):
+            if 'phi3:mini' in model.get('name', ''):
+                model_found = True
+                break
+        
+        if model_found:
             if COLORS_AVAILABLE:
-                print(f"{Fore.GREEN}Ollama server is already running{Style.RESET_ALL}")
+                print(f"{Fore.GREEN}✓ phi3:mini model ready{Style.RESET_ALL}")
             else:
-                print("Ollama server is already running")
+                print("✓ phi3:mini model ready")
             return True
-        except:
+        else:
             if COLORS_AVAILABLE:
-                print(f"{Fore.YELLOW}Starting Ollama server...{Style.RESET_ALL}")
+                print(f"{Fore.YELLOW}⚠ phi3:mini model not found{Style.RESET_ALL}")
+                print(f"{Fore.CYAN}💡 Please run: ollama pull phi3:mini{Style.RESET_ALL}")
             else:
-                print("Starting Ollama server...")
-            # Start Ollama server in background (Windows optimized)
-            try:
-                # Use CREATE_NEW_PROCESS_GROUP to avoid console signal propagation issues
-                self.ollama_process = subprocess.Popen(
-                    ['ollama.exe', 'serve'],
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                    creationflags=subprocess.CREATE_NEW_PROCESS_GROUP
-                )
-            except FileNotFoundError:
-                # Fallback if ollama.exe is not found, try without .exe
-                self.ollama_process = subprocess.Popen(
-                    ['ollama', 'serve'],
-                    stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL,
-                    creationflags=subprocess.CREATE_NEW_PROCESS_GROUP
-                )
+                print("⚠ phi3:mini model not found")
+                print("💡 Please run: ollama pull phi3:mini")
+            return False
             
-            self.started_by_us = True
-            
-            # Enhanced Windows startup with longer waits and better feedback
-            if COLORS_AVAILABLE:
-                print(f"{Fore.CYAN}Starting Ollama server on Windows...{Style.RESET_ALL}")
-            else:
-                print("Starting Ollama server on Windows...")
-                
-            # Initial longer wait for Windows
-            if COLORS_AVAILABLE:
-                print(f"{Fore.CYAN}Initial startup wait (10 seconds)...{Style.RESET_ALL}")
-            else:
-                print("Initial startup wait (10 seconds)...")
-            time.sleep(10)
-            
-            # Verify server with more retries and longer delays
-            max_retries = 8
-            wait_time = 3
-            
-            for i in range(max_retries):
-                try:
-                    # Try to connect to Ollama
-                    ollama.list()
-                    if COLORS_AVAILABLE:
-                        print(f"{Fore.GREEN}✓ Ollama server started successfully!{Style.RESET_ALL}")
-                    else:
-                        print("✓ Ollama server started successfully!")
-                    return True
-                except Exception as e:
-                    if i < max_retries - 1:
-                        if COLORS_AVAILABLE:
-                            print(f"{Fore.YELLOW}Server not ready yet, waiting... ({i+1}/{max_retries}) - {wait_time}s{Style.RESET_ALL}")
-                        else:
-                            print(f"Server not ready yet, waiting... ({i+1}/{max_retries}) - {wait_time}s")
-                        time.sleep(wait_time)
-                        # Increase wait time progressively
-                        wait_time = min(wait_time + 1, 6)
-                    else:
-                        if COLORS_AVAILABLE:
-                            print(f"{Fore.YELLOW}⚠ Server startup taking longer than expected.{Style.RESET_ALL}")
-                            print(f"{Fore.CYAN}Attempting to continue - the server might still be starting...{Style.RESET_ALL}")
-                        else:
-                            print("⚠ Server startup taking longer than expected.")
-                            print("Attempting to continue - the server might still be starting...")
-                        return True
-    
-    def shutdown_ollama(self):
-        """Shutdown Ollama server if we started it (Windows optimized)"""
-        if self.started_by_us and self.ollama_process:
-            if COLORS_AVAILABLE:
-                print(f"{Fore.YELLOW}Shutting down Ollama server...{Style.RESET_ALL}")
-            else:
-                print("Shutting down Ollama server...")
-            try:
-                # Enhanced process management with psutil if available
-                if PSUTIL_AVAILABLE:
-                    try:
-                        # Use psutil for more reliable process management
-                        parent = psutil.Process(self.ollama_process.pid)
-                        children = parent.children(recursive=True)
-                        
-                        # Terminate children first
-                        for child in children:
-                            child.terminate()
-                        
-                        # Terminate parent
-                        parent.terminate()
-                        
-                        # Wait for processes to terminate
-                        psutil.wait_procs([parent] + children, timeout=5)
-                        
-                        if COLORS_AVAILABLE:
-                            print(f"{Fore.GREEN}Ollama server terminated successfully (psutil){Style.RESET_ALL}")
-                        else:
-                            print("Ollama server terminated successfully (psutil)")
-                        return
-                    except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.TimeoutExpired):
-                        # Fall through to taskkill method
-                        pass
-                
-                # Method 1: Use taskkill for reliable Windows process termination
-                try:
-                    result = subprocess.run(
-                        ['taskkill', '/F', '/T', '/PID', str(self.ollama_process.pid)],
-                        check=False,
-                        capture_output=True,
-                        timeout=10
-                    )
-                    if result.returncode == 0:
-                        if COLORS_AVAILABLE:
-                            print(f"{Fore.GREEN}Ollama server terminated successfully{Style.RESET_ALL}")
-                        else:
-                            print("Ollama server terminated successfully")
-                    else:
-                        # Fallback to Python's terminate
-                        self.ollama_process.terminate()
-                        time.sleep(2)
-                except (subprocess.TimeoutExpired, FileNotFoundError):
-                    # Method 2: Fallback to standard termination
-                    self.ollama_process.terminate()
-                    time.sleep(3)
-                
-                # Wait for process to actually end
-                try:
-                    self.ollama_process.wait(timeout=5)
-                except subprocess.TimeoutExpired:
-                    print("Process took longer than expected to shutdown")
-                
-            except Exception as e:
-                print(f"Note: Cleanup completed with minor issues: {type(e).__name__}")
-            finally:
-                self.ollama_process = None
-                self.started_by_us = False
-                if COLORS_AVAILABLE:
-                    print(f"{Fore.GREEN}Ollama server shutdown complete{Style.RESET_ALL}")
-                else:
-                    print("Ollama server shutdown complete")
-
-# Create Ollama manager instance
-ollama_manager = OllamaManagerWindows()
-
-# Register cleanup function to run on exit
-atexit.register(ollama_manager.shutdown_ollama)
-
-# Handle Ctrl+C and Ctrl+Break gracefully (Windows optimized)
-def signal_handler(sig, frame):
-    print("\nReceived interrupt signal, cleaning up...")
-    ollama_manager.shutdown_ollama()
-    sys.exit(0)
-
-# Register Windows-compatible signal handlers
-signal.signal(signal.SIGINT, signal_handler)  # Ctrl+C
-if hasattr(signal, 'SIGBREAK'):
-    signal.signal(signal.SIGBREAK, signal_handler)  # Ctrl+Break (Windows)
+    except Exception as e:
+        if COLORS_AVAILABLE:
+            print(f"{Fore.RED}❌ Cannot connect to Ollama: {e}{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}💡 Make sure Ollama is installed and running{Style.RESET_ALL}")
+        else:
+            print(f"❌ Cannot connect to Ollama: {e}")
+            print("💡 Make sure Ollama is installed and running")
+        return False
 
 def chat():
     """Interactive chat function similar to ChatGPT (Windows optimized)"""
@@ -252,11 +108,11 @@ def chat():
                 
             except Exception as e:
                 if COLORS_AVAILABLE:
-                    print(f"{Fore.RED}❌ Error connecting to AI: {e}{Style.RESET_ALL}")
-                    print(f"{Fore.YELLOW}💡 Try waiting a moment for the server to fully start, then try again.{Style.RESET_ALL}")
+                    print(f"{Fore.RED}❌ Error: {e}{Style.RESET_ALL}")
+                    print(f"{Fore.YELLOW}💡 Make sure Ollama service is running and phi3:mini model is available{Style.RESET_ALL}")
                 else:
-                    print(f"❌ Error connecting to AI: {e}")
-                    print("💡 Try waiting a moment for the server to fully start, then try again.")
+                    print(f"❌ Error: {e}")
+                    print("💡 Make sure Ollama service is running and phi3:mini model is available")
             
         except KeyboardInterrupt:
             if COLORS_AVAILABLE:
@@ -323,30 +179,40 @@ def main_menu():
             else:
                 print("❌ Invalid choice. Please enter 1, 2, or 3.")
 
-try:
-    # Ensure Ollama is running before making requests
+def main():
+    """Main function for Windows GenAI Demo"""
     if COLORS_AVAILABLE:
-        print(f"{Fore.CYAN}🚀 Starting GenAI Demo for Windows...{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}🚀 GenAI Demo - Windows Edition{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}Uses system Ollama installation (C:/Users/.ollama/models/){Style.RESET_ALL}")
     else:
-        print("🚀 Starting GenAI Demo for Windows...")
-        
-    ollama_manager.ensure_ollama_running()
+        print("🚀 GenAI Demo - Windows Edition")
+        print("Uses system Ollama installation (C:/Users/.ollama/models/)")
+    
+    print("=" * 60)
+    
+    # Check Ollama connection and model availability
+    if not check_ollama_connection():
+        if COLORS_AVAILABLE:
+            print(f"\n{Fore.RED}❌ Setup incomplete. Please fix the above issues and try again.{Style.RESET_ALL}")
+        else:
+            print("\n❌ Setup incomplete. Please fix the above issues and try again.")
+        input("Press Enter to exit...")
+        return
     
     # Start the main menu
     main_menu()
 
-except KeyboardInterrupt:
-    if COLORS_AVAILABLE:
-        print(f"\n{Fore.YELLOW}Program interrupted by user{Style.RESET_ALL}")
-    else:
-        print("\nProgram interrupted by user")
-except Exception as e:
-    if COLORS_AVAILABLE:
-        print(f"{Fore.RED}An error occurred: {e}{Style.RESET_ALL}")
-        print(f"{Fore.YELLOW}💡 If this is a connection error, try running the program again in a few moments.{Style.RESET_ALL}")
-    else:
-        print(f"An error occurred: {e}")
-        print("💡 If this is a connection error, try running the program again in a few moments.")
-finally:
-    # Ensure cleanup happens even if there's an exception
-    ollama_manager.shutdown_ollama()
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        if COLORS_AVAILABLE:
+            print(f"\n{Fore.YELLOW}👋 Program interrupted by user. Goodbye!{Style.RESET_ALL}")
+        else:
+            print("\n👋 Program interrupted by user. Goodbye!")
+    except Exception as e:
+        if COLORS_AVAILABLE:
+            print(f"\n{Fore.RED}❌ An error occurred: {e}{Style.RESET_ALL}")
+        else:
+            print(f"\n❌ An error occurred: {e}")
+        input("Press Enter to exit...")
