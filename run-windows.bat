@@ -25,6 +25,16 @@ if exist "requirements-windows.txt" (
     pip install -r requirements.txt >nul 2>&1
 )
 
+REM Start Ollama service if not running
+echo Checking Ollama service...
+ollama list >nul 2>&1
+if errorlevel 1 (
+    echo Starting Ollama service...
+    start /b ollama serve
+    echo Waiting for service to start...
+    timeout /t 10 /nobreak >nul
+)
+
 REM Check if model exists
 echo Checking for AI model...
 ollama list | findstr "phi3:mini" >nul
@@ -34,6 +44,7 @@ if errorlevel 1 (
     ollama pull phi3:mini
     if errorlevel 1 (
         echo Failed to download model. Please check Ollama installation.
+        echo Try running troubleshoot-windows.bat for detailed diagnostics.
         pause
         exit /b 1
     )

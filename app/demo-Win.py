@@ -68,29 +68,49 @@ class OllamaManagerWindows:
                 )
             
             self.started_by_us = True
-            # Longer wait for Windows (can be slower to start)
-            if COLORS_AVAILABLE:
-                print(f"{Fore.CYAN}Waiting for Ollama server to start...{Style.RESET_ALL}")
-            else:
-                print("Waiting for Ollama server to start...")
-            time.sleep(7)
             
-            # Verify server actually started
-            max_retries = 5
+            # Enhanced Windows startup with longer waits and better feedback
+            if COLORS_AVAILABLE:
+                print(f"{Fore.CYAN}Starting Ollama server on Windows...{Style.RESET_ALL}")
+            else:
+                print("Starting Ollama server on Windows...")
+                
+            # Initial longer wait for Windows
+            if COLORS_AVAILABLE:
+                print(f"{Fore.CYAN}Initial startup wait (10 seconds)...{Style.RESET_ALL}")
+            else:
+                print("Initial startup wait (10 seconds)...")
+            time.sleep(10)
+            
+            # Verify server with more retries and longer delays
+            max_retries = 8
+            wait_time = 3
+            
             for i in range(max_retries):
                 try:
+                    # Try to connect to Ollama
                     ollama.list()
                     if COLORS_AVAILABLE:
-                        print(f"{Fore.GREEN}Ollama server started successfully!{Style.RESET_ALL}")
+                        print(f"{Fore.GREEN}✓ Ollama server started successfully!{Style.RESET_ALL}")
                     else:
-                        print("Ollama server started successfully!")
+                        print("✓ Ollama server started successfully!")
                     return True
-                except:
+                except Exception as e:
                     if i < max_retries - 1:
-                        print(f"Server not ready yet, waiting... ({i+1}/{max_retries})")
-                        time.sleep(2)
+                        if COLORS_AVAILABLE:
+                            print(f"{Fore.YELLOW}Server not ready yet, waiting... ({i+1}/{max_retries}) - {wait_time}s{Style.RESET_ALL}")
+                        else:
+                            print(f"Server not ready yet, waiting... ({i+1}/{max_retries}) - {wait_time}s")
+                        time.sleep(wait_time)
+                        # Increase wait time progressively
+                        wait_time = min(wait_time + 1, 6)
                     else:
-                        print("Warning: Server may not have started properly")
+                        if COLORS_AVAILABLE:
+                            print(f"{Fore.YELLOW}⚠ Server startup taking longer than expected.{Style.RESET_ALL}")
+                            print(f"{Fore.CYAN}Attempting to continue - the server might still be starting...{Style.RESET_ALL}")
+                        else:
+                            print("⚠ Server startup taking longer than expected.")
+                            print("Attempting to continue - the server might still be starting...")
                         return True
     
     def shutdown_ollama(self):
@@ -182,19 +202,151 @@ signal.signal(signal.SIGINT, signal_handler)  # Ctrl+C
 if hasattr(signal, 'SIGBREAK'):
     signal.signal(signal.SIGBREAK, signal_handler)  # Ctrl+Break (Windows)
 
+def chat():
+    """Interactive chat function similar to ChatGPT (Windows optimized)"""
+    if COLORS_AVAILABLE:
+        print(f"{Fore.CYAN}🤖 Welcome to GenAI Chat! (Type 'quit', 'exit', or 'q' to stop){Style.RESET_ALL}")
+    else:
+        print("🤖 Welcome to GenAI Chat! (Type 'quit', 'exit', or 'q' to stop)")
+    print("=" * 50)
+    
+    # Initialize conversation history
+    conversation = []
+    
+    while True:
+        try:
+            # Get user input
+            user_input = input("\n👤 You: ").strip()
+            
+            # Check for quit commands
+            if user_input.lower() in ['quit', 'exit', 'q']:
+                if COLORS_AVAILABLE:
+                    print(f"\n{Fore.GREEN}👋 Goodbye! Thanks for chatting!{Style.RESET_ALL}")
+                else:
+                    print("\n👋 Goodbye! Thanks for chatting!")
+                break
+            
+            # Skip empty inputs
+            if not user_input:
+                print("Please enter a message or 'quit' to exit.")
+                continue
+            
+            # Add user message to conversation
+            conversation.append({'role': 'user', 'content': user_input})
+            
+            # Get AI response with Windows-specific error handling
+            if COLORS_AVAILABLE:
+                print(f"{Fore.CYAN}🤖 AI: {Style.RESET_ALL}", end="", flush=True)
+            else:
+                print("🤖 AI: ", end="", flush=True)
+                
+            try:
+                response = ollama.chat(model='phi3:mini', messages=conversation)
+                ai_response = response['message']['content']
+                
+                # Print AI response
+                print(ai_response)
+                
+                # Add AI response to conversation history
+                conversation.append({'role': 'assistant', 'content': ai_response})
+                
+            except Exception as e:
+                if COLORS_AVAILABLE:
+                    print(f"{Fore.RED}❌ Error connecting to AI: {e}{Style.RESET_ALL}")
+                    print(f"{Fore.YELLOW}💡 Try waiting a moment for the server to fully start, then try again.{Style.RESET_ALL}")
+                else:
+                    print(f"❌ Error connecting to AI: {e}")
+                    print("💡 Try waiting a moment for the server to fully start, then try again.")
+            
+        except KeyboardInterrupt:
+            if COLORS_AVAILABLE:
+                print(f"\n\n{Fore.GREEN}👋 Chat interrupted. Goodbye!{Style.RESET_ALL}")
+            else:
+                print("\n\n👋 Chat interrupted. Goodbye!")
+            break
+        except Exception as e:
+            if COLORS_AVAILABLE:
+                print(f"\n{Fore.RED}❌ Error: {e}{Style.RESET_ALL}")
+            else:
+                print(f"\n❌ Error: {e}")
+            print("Please try again or type 'quit' to exit.")
+
+def generative():
+    """Generate instructions based on PDF documents (Windows version - to be implemented)"""
+    if COLORS_AVAILABLE:
+        print(f"{Fore.CYAN}📄 Generative Document Analysis{Style.RESET_ALL}")
+    else:
+        print("📄 Generative Document Analysis")
+    print("=" * 40)
+    if COLORS_AVAILABLE:
+        print(f"{Fore.YELLOW}🚧 This feature will be implemented later.{Style.RESET_ALL}")
+    else:
+        print("🚧 This feature will be implemented later.")
+    print("📋 Planned functionality:")
+    print("   • Read 2-3 PDF documents")
+    print("   • Analyze document content")
+    print("   • Generate instructions based on the documents")
+    print("   • Provide document-based Q&A")
+    
+    # Placeholder for future implementation
+    input("\nPress Enter to return to main menu...")
+
+def main_menu():
+    """Display main menu and handle user selection (Windows optimized)"""
+    while True:
+        print("\n" + "=" * 50)
+        if COLORS_AVAILABLE:
+            print(f"{Fore.CYAN}🚀 GenAI Demo - Windows Edition - Choose an option:{Style.RESET_ALL}")
+        else:
+            print("🚀 GenAI Demo - Windows Edition - Choose an option:")
+        print("=" * 50)
+        print("1. 💬 Interactive Chat")
+        print("2. 📄 Document Analysis (Coming Soon)")
+        print("3. 🚪 Exit")
+        print("-" * 50)
+        
+        choice = input("Enter your choice (1-3): ").strip()
+        
+        if choice == '1':
+            chat()
+        elif choice == '2':
+            generative()
+        elif choice == '3':
+            if COLORS_AVAILABLE:
+                print(f"\n{Fore.GREEN}👋 Goodbye!{Style.RESET_ALL}")
+            else:
+                print("\n👋 Goodbye!")
+            break
+        else:
+            if COLORS_AVAILABLE:
+                print(f"{Fore.RED}❌ Invalid choice. Please enter 1, 2, or 3.{Style.RESET_ALL}")
+            else:
+                print("❌ Invalid choice. Please enter 1, 2, or 3.")
+
 try:
     # Ensure Ollama is running before making requests
+    if COLORS_AVAILABLE:
+        print(f"{Fore.CYAN}🚀 Starting GenAI Demo for Windows...{Style.RESET_ALL}")
+    else:
+        print("🚀 Starting GenAI Demo for Windows...")
+        
     ollama_manager.ensure_ollama_running()
-
-    response = ollama.chat(model='phi3:mini', messages=[
-      {'role':'user','content':'give me a short poem about AI'}
-    ])
-    print(response['message']['content'])
+    
+    # Start the main menu
+    main_menu()
 
 except KeyboardInterrupt:
-    print("\nProgram interrupted by user")
+    if COLORS_AVAILABLE:
+        print(f"\n{Fore.YELLOW}Program interrupted by user{Style.RESET_ALL}")
+    else:
+        print("\nProgram interrupted by user")
 except Exception as e:
-    print(f"An error occurred: {e}")
+    if COLORS_AVAILABLE:
+        print(f"{Fore.RED}An error occurred: {e}{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}💡 If this is a connection error, try running the program again in a few moments.{Style.RESET_ALL}")
+    else:
+        print(f"An error occurred: {e}")
+        print("💡 If this is a connection error, try running the program again in a few moments.")
 finally:
     # Ensure cleanup happens even if there's an exception
     ollama_manager.shutdown_ollama()

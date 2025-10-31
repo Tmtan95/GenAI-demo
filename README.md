@@ -38,6 +38,7 @@ GenAI-Demo/
 ├── requirements-windows.txt # Windows-specific dependencies
 ├── run-macos.sh            # One-click macOS launcher
 ├── run-windows.bat         # One-click Windows launcher
+├── troubleshoot-windows.bat # Windows troubleshooting tool
 └── README.md               # This file
 ```
 
@@ -121,11 +122,31 @@ python app/demo-Win.py
 
 ## Troubleshooting
 
+### Windows-Specific Issues:
+
+**"Server not ready yet, waiting..." Error:**
+This is common on Windows due to slower startup times. Solutions:
+
+1. **Use the troubleshooting tool:**
+   ```cmd
+   troubleshoot-windows.bat
+   ```
+
+2. **Manual steps:**
+   - Ensure Ollama service is running: `ollama serve`
+   - Wait 15-30 seconds before running the demo
+   - Try running `ollama list` to verify connection
+
+3. **If still having issues:**
+   - Restart your computer
+   - Reinstall Ollama from [ollama.com](https://ollama.com)
+   - Make sure Windows Defender isn't blocking Ollama
+
 ### Common Issues:
 
 1. **"ollama command not found"**
    - **macOS**: Restart terminal after installing Ollama
-   - **Windows**: Add Ollama installation directory to PATH
+   - **Windows**: Add Ollama installation directory to PATH or reinstall Ollama
 
 2. **Model not found error**
    - Run `ollama pull phi3:mini` to download the model
