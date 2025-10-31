@@ -1,15 +1,15 @@
-# GenAI Demo - Cross-Platform AI Assistant
+# GenAI Demo - AI Assistant
 
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows-lightgrey.svg)]()
+[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux-lightgrey.svg)]()
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-A cross-platform AI chat application using Ollama with the Phi-3 Mini model. Features interactive ChatGPT-like conversations with platform-specific optimizations.
+An AI chat application using Ollama with the Phi-3 Mini model. Features interactive ChatGPT-like conversations with automatic server management.
 
 ## 🚀 Features
 
 - 💬 **Interactive Chat**: ChatGPT-like conversation with memory
-- 🖥️ **Cross-platform**: Optimized for both macOS and Windows  
+- 🖥️ **macOS/Linux**: Optimized for Unix-based systems  
 - 🤖 **AI-Powered**: Uses Phi-3 Mini model via Ollama
 - 🎨 **Enhanced UI**: Colored output and professional interface
 - � **Document Analysis**: Coming soon - PDF-based instruction generation
@@ -18,11 +18,9 @@ A cross-platform AI chat application using Ollama with the Phi-3 Mini model. Fea
 ```
 GenAI-Demo/
 ├── app/
-│   ├── demo.py              # macOS/Linux version (with server management)
-│   └── demo-Win.py          # Windows version (uses system Ollama)
+│   └── demo.py              # Main application with server management
 ├── model/                   # Model storage (local only, not in git)
 ├── requirements.txt         # Python dependencies
-├── requirements-windows.txt # Windows-enhanced dependencies  
 └── README.md               # This file
 ```
 
@@ -41,19 +39,10 @@ GenAI-Demo/
    ```
 
 2. **Set up Python environment:**
-   
-   **macOS/Linux:**
    ```bash
    python3 -m venv env
    source env/bin/activate
    pip install -r requirements.txt
-   ```
-   
-   **Windows:**
-   ```cmd
-   python -m venv env
-   env\Scripts\activate
-   pip install -r requirements-windows.txt
    ```
 
 3. **Install AI model:**
@@ -62,40 +51,20 @@ GenAI-Demo/
    ```
 
 4. **Run the application:**
-   
-   **macOS/Linux:**
    ```bash
    python app/demo.py
    ```
-   
-   **Windows:**
-   ```cmd
-   python app/demo-Win.py
-   ```
 
-## 🖥️ Platform Differences
+## � Usage
 
-### macOS/Linux (`demo.py`)
-- **Server Management**: Automatically starts/stops Ollama server
-- **Model Storage**: `GenAI-Demo/model/ollama_models/`
-- **Process Control**: Full lifecycle management
-
-### Windows (`demo-Win.py`)  
-- **System Integration**: Uses system Ollama service
-- **Model Storage**: `C:/Users/.ollama/models/`
-- **Simplified Design**: No server management needed
-
-## 🔍 Usage
-
-Both versions provide the same features:
+The application provides:
 
 1. **Interactive Chat** - ChatGPT-like conversation with context memory
 2. **Document Analysis** - Coming soon (PDF-based instruction generation)  
 3. **Clean Interface** - Professional menus and colored output
+4. **Auto Management** - Automatically starts/stops Ollama server
 
-Navigate through options using the numbered menu system.
-
-## ⚠️ Troubleshooting
+Navigate through options using the numbered menu system.## ⚠️ Troubleshooting
 
 ### Model Issues
 ```bash
@@ -115,22 +84,14 @@ ollama serve
 ollama list
 ```
 
-### Windows-Specific
-- Make sure Ollama is added to PATH
-- Try running as Administrator if needed
-- Restart Ollama service if connection fails
+### System-Specific
+- Ensure Ollama is properly installed
+- Check that port 11434 is not blocked by firewall
 
 ## 📦 Dependencies
 
-### Basic (`requirements.txt`)
-- `ollama==0.6.0` - Core AI functionality
-
-### Windows Enhanced (`requirements-windows.txt`)  
-- `ollama==0.6.0` - Core AI functionality
-- `colorama==0.4.6` - Colored console output
-- `psutil==5.9.6` - Enhanced process management  
-- `requests==2.31.0` - HTTP reliability
-- `urllib3==2.0.7` - Network compatibility
+### Core (`requirements.txt`)
+- `ollama==0.6.0` - Core AI functionality and model management
 
 ## 📝 License
 
