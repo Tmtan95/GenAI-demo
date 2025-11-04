@@ -1,1 +1,8 @@
 ollama==0.6.0
+
+# RAG System Dependencies (Document Analysis)
+sentence-transformers==2.7.0  # Small embedding model (all-MiniLM-L6-v2, ~23MB)
+huggingface-hub==0.20.3      # Compatible version for sentence-transformers
+faiss-cpu==1.7.4             # Vector similarity search (CPU version)
+PyPDF2==3.0.1               # PDF text extraction  
+numpy==1.24.3                # Numerical operations

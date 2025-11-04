@@ -52,3 +52,16 @@ model/ollama_models/manifests/
 
 # Logs
 *.log
+
+# RAG System - Cached embeddings and processed documents
+cache/
+*.pkl
+
+# Sensitive documents (add your PDFs to documents/ folder but don't commit them)
+documents/*.pdf
+
+# Environment variables and secrets
+.env
+.env.local
+*.key
+*.pem

@@ -9,10 +9,12 @@ An AI chat application using Ollama with the Phi-3 Mini model. Features interact
 ## 🚀 Features
 
 - 💬 **Interactive Chat**: ChatGPT-like conversation with memory
-- 🖥️ **macOS/Linux**: Optimized for Unix-based systems  
+- 🖥️ **macOS/Linux**: Optimized for Unix-based systems
 - 🤖 **AI-Powered**: Uses Phi-3 Mini model via Ollama
 - 🎨 **Enhanced UI**: Colored output and professional interface
-- � **Document Analysis**: Coming soon - PDF-based instruction generation
+- 📄 **RAG Document Analysis**: PDF-based Q&A using embedding models
+- 🔍 **Semantic Search**: Find relevant information across documents
+- ⚡ **Offline Operation**: Works completely offline after setup
 
 ## 📁 Project Structure
 ```
@@ -92,6 +94,18 @@ ollama list
 
 ### Core (`requirements.txt`)
 - `ollama==0.6.0` - Core AI functionality and model management
+
+### RAG System (for Document Analysis)
+- `sentence-transformers==2.2.2` - Embedding model (all-MiniLM-L6-v2, ~23MB)
+- `faiss-cpu==1.7.4` - Vector similarity search
+- `PyPDF2==3.0.1` - PDF text extraction
+- `numpy==1.24.3` - Numerical operations
+
+**🎯 Recommended Embedding Model: all-MiniLM-L6-v2**
+- Size: ~23MB (very lightweight)
+- Dimensions: 384 (efficient)
+- Offline: ✅ Works completely offline
+- Perfect for 2-3 PDF files
 
 ## 📝 License
 
