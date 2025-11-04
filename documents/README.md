@@ -2,12 +2,13 @@
 
 ## 📚 **Recommended Embedding Model**
 
-**🥇 sentence-transformers/all-MiniLM-L6-v2**
-- **Size**: ~23MB (very lightweight!)
-- **Dimensions**: 384 (efficient for small datasets)
-- **Performance**: Excellent for general text understanding
-- **Speed**: Fast inference, perfect for 2-3 PDF files
+**🥇 BAAI/bge-large-en-v1.5**
+- **Size**: ~1.34GB (high-quality model)
+- **Dimensions**: 1024 (excellent for semantic understanding)
+- **Performance**: State-of-the-art accuracy for technical documents
+- **Speed**: Optimized for large PDFs (15MB+)
 - **Offline**: Works completely offline after initial download
+- **Best for**: Research papers, technical documentation, large documents
 
 ## 🛠️ **Installation**
 
@@ -43,10 +44,11 @@ python app/demo.py
 - ⚡ Lightning-fast subsequent loads
 - 🔄 Auto-detects document changes
 
-### **Optimized for Small Datasets**
+### **Optimized for Large Documents**
 - 📊 Chunk size: 500 characters (optimal for PDFs)
 - 🎯 Retrieves top 3 most relevant sections
-- 💾 Small memory footprint
+- � Handles 15MB+ PDF files efficiently
+- 🎓 High-quality embeddings for better semantic search
 
 ### **Offline Operation**
 - 🔒 No internet required after setup

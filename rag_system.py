@@ -2,16 +2,16 @@
 RAG (Retrieval-Augmented Generation) System for GenAI Demo
 
 This module implements a simple but effective RAG system using:
-- sentence-transformers for embeddings (all-MiniLM-L6-v2)
+- sentence-transformers for embeddings (bge-large-en-v1.5)
 - FAISS for vector similarity search
 - PyPDF2 for PDF text extraction
 - Ollama phi3:mini for text generation
 
 Features:
+- High-quality embeddings for better semantic understanding
+- Handles large PDFs (15MB+)
 - Offline operation (after initial model download)
-- Small memory footprint
-- Fast inference
-- Optimized for 2-3 PDF documents
+- Optimized for technical documents and research papers
 """
 
 import os
@@ -46,9 +46,12 @@ class RAGSystem:
         try:
             from sentence_transformers import SentenceTransformer
             
-            print("📥 Loading embedding model (all-MiniLM-L6-v2)...")
-            # This model is small (~23MB) and good for general text
-            self.embeddings_model = SentenceTransformer('all-MiniLM-L6-v2')
+            print("📥 Loading embedding model (bge-large-en-v1.5)...")
+            print("   This is a high-quality model (~1.34GB) for better accuracy.")
+            print("   First-time download may take a few minutes...")
+            # BGE-large is one of the best open-source embedding models
+            # 1024 dimensions, excellent for technical documents
+            self.embeddings_model = SentenceTransformer('BAAI/bge-large-en-v1.5')
             print("✅ Embedding model loaded successfully!")
             return True
         except ImportError:

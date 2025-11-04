@@ -96,7 +96,7 @@ ollama list
 - `ollama==0.6.0` - Core AI functionality and model management
 
 ### RAG System (for Document Analysis)
-- `sentence-transformers==2.2.2` - Embedding model (all-MiniLM-L6-v2, ~23MB)
+- `sentence-transformers==2.7.0` - Embedding model (bge-large-en-v1.5, ~1.34GB)
 - `faiss-cpu==1.7.4` - Vector similarity search
 - `PyPDF2==3.0.1` - PDF text extraction
 - `numpy==1.24.3` - Numerical operations
