@@ -4,17 +4,18 @@
 [![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux-lightgrey.svg)]()
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-An AI chat application using Ollama with the Phi-3 Mini model. Features interactive ChatGPT-like conversations with automatic server management.
+An AI chat application using Ollama with the Gemma 3 270M model. Features interactive ChatGPT-like conversations with automatic server management.
 
 ## 🚀 Features
 
 - 💬 **Interactive Chat**: ChatGPT-like conversation with memory
 - 🖥️ **macOS/Linux**: Optimized for Unix-based systems
-- 🤖 **AI-Powered**: Uses Phi-3 Mini model via Ollama
+- 🤖 **AI-Powered**: Uses ultra-lightweight Gemma 3 270M model via Ollama
 - 🎨 **Enhanced UI**: Colored output and professional interface
 - 📄 **RAG Document Analysis**: PDF-based Q&A using embedding models
 - 🔍 **Semantic Search**: Find relevant information across documents
 - ⚡ **Offline Operation**: Works completely offline after setup
+- 🚀 **Fast Responses**: 270M parameter model for quick inference
 
 ## 📁 Project Structure
 ```
@@ -49,7 +50,7 @@ GenAI-Demo/
 
 3. **Install AI model:**
    ```bash
-   ollama pull phi3:mini
+   ollama pull gemma3:270m
    ```
 
 4. **Run the application:**
@@ -74,7 +75,7 @@ Navigate through options using the numbered menu system.## ⚠️ Troubleshootin
 ollama list
 
 # Download model if missing  
-ollama pull phi3:mini
+ollama pull gemma3:270m
 ```
 
 ### Connection Issues

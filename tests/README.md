@@ -28,7 +28,7 @@ Tests Ollama model interactions (mocked):
 ### 3. **TestRealOllamaConnection**
 Integration tests with real Ollama server:
 - ✅ Real server connection
-- ✅ phi3:mini model availability
+- ✅ gemma3:270m model availability
 - ✅ Actual chat interactions
 - ⚠️ Skipped if server unavailable
 
@@ -107,7 +107,7 @@ python tests/run_tests.py -v
 This is normal! The real server tests are designed to skip when:
 - Ollama server is not running
 - Connection fails
-- phi3:mini model not available
+- gemma3:270m model not available
 
 ### Import Errors
 Make sure you're running from the project root directory:

@@ -47,8 +47,8 @@ class TestOllamaConnection(unittest.TestCase):
         mock_list.return_value = {
             'models': [
                 {
-                    'name': 'phi3:mini',
-                    'size': 2176178913,
+                    'name': 'gemma3:270m',
+                    'size': 291000000,
                     'digest': 'test_digest'
                 }
             ]
@@ -142,10 +142,10 @@ class TestOllamaModel(unittest.TestCase):
         mock_list.return_value = {
             'models': [
                 {
-                    'name': 'phi3:mini',
-                    'size': 2176178913,
+                    'name': 'gemma3:270m',
+                    'size': 291000000,
                     'digest': 'abcd1234',
-                    'modified_at': '2025-10-31T12:00:00Z'
+                    'modified_at': '2025-11-07T12:00:00Z'
                 }
             ]
         }
@@ -154,7 +154,7 @@ class TestOllamaModel(unittest.TestCase):
         
         self.assertIn('models', models)
         self.assertEqual(len(models['models']), 1)
-        self.assertEqual(models['models'][0]['name'], 'phi3:mini')
+        self.assertEqual(models['models'][0]['name'], 'gemma3:270m')
     
     @unittest.skipUnless(OLLAMA_AVAILABLE, "Ollama not available")
     @patch('ollama.list')
@@ -177,7 +177,7 @@ class TestOllamaModel(unittest.TestCase):
         }
         
         response = ollama.chat(
-            model='phi3:mini',
+            model='gemma3:270m',
             messages=[{'role': 'user', 'content': 'Hello'}]
         )
         
@@ -185,7 +185,7 @@ class TestOllamaModel(unittest.TestCase):
         self.assertEqual(response['message']['role'], 'assistant')
         self.assertIn('Hello', response['message']['content'])
         mock_chat.assert_called_once_with(
-            model='phi3:mini',
+            model='gemma3:270m',
             messages=[{'role': 'user', 'content': 'Hello'}]
         )
     
@@ -218,10 +218,10 @@ class TestOllamaModel(unittest.TestCase):
             {'role': 'user', 'content': 'What is my name?'}
         ]
         
-        response = ollama.chat(model='phi3:mini', messages=conversation)
+        response = ollama.chat(model='gemma3:270m', messages=conversation)
         
         # Verify the full conversation was passed
-        mock_chat.assert_called_once_with(model='phi3:mini', messages=conversation)
+        mock_chat.assert_called_once_with(model='gemma3:270m', messages=conversation)
         self.assertEqual(len(conversation), 3)  # Conversation history preserved
 
 
@@ -259,8 +259,8 @@ class TestRealOllamaConnection(unittest.TestCase):
             self.skipTest(f"Real Ollama server connection failed: {e}")
     
     @unittest.skipUnless(OLLAMA_AVAILABLE, "Ollama library not available")
-    def test_real_phi3_model_availability(self):
-        """Test if phi3:mini model is available in real server"""
+    def test_real_gemma3_model_availability(self):
+        """Test if gemma3:270m model is available in real server"""
         if not self.ollama_available:
             self.skipTest("Real Ollama server not available")
         
@@ -273,7 +273,7 @@ class TestRealOllamaConnection(unittest.TestCase):
             else:
                 model_list = models.get('models', [])
             
-            phi3_found = False
+            gemma3_found = False
             for model in model_list:
                 # Handle both Model object and dict formats
                 if hasattr(model, 'model'):
@@ -281,30 +281,30 @@ class TestRealOllamaConnection(unittest.TestCase):
                 else:
                     model_name = model.get('name', model.get('model', ''))
                 
-                if 'phi3:mini' in model_name:
-                    phi3_found = True
-                    print(f"Found phi3:mini model: {model_name}")
+                if 'gemma3:270m' in model_name:
+                    gemma3_found = True
+                    print(f"Found gemma3:270m model: {model_name}")
                     break
             
-            if not phi3_found:
-                self.skipTest("phi3:mini model not found in real server")
+            if not gemma3_found:
+                self.skipTest("gemma3:270m model not found in real server")
             
-            # If we get here, phi3:mini is available
-            self.assertTrue(phi3_found)
+            # If we get here, gemma3:270m is available
+            self.assertTrue(gemma3_found)
             
         except Exception as e:
-            self.skipTest(f"Could not check phi3:mini availability: {e}")
+            self.skipTest(f"Could not check gemma3:270m availability: {e}")
     
     @unittest.skipUnless(OLLAMA_AVAILABLE, "Ollama library not available")
-    def test_real_phi3_chat(self):
-        """Test actual chat with phi3:mini model (if available)"""
+    def test_real_gemma3_chat(self):
+        """Test actual chat with gemma3:270m model (if available)"""
         if not self.ollama_available:
             self.skipTest("Real Ollama server not available")
         
         try:
             # Simple test message
             response = ollama.chat(
-                model='phi3:mini',
+                model='gemma3:270m',
                 messages=[{
                     'role': 'user',
                     'content': 'Say "test successful" in exactly those words.'
@@ -322,7 +322,7 @@ class TestRealOllamaConnection(unittest.TestCase):
             self.assertGreater(len(response['message']['content']), 0)
             
         except Exception as e:
-            self.skipTest(f"Real phi3:mini chat test failed: {e}")
+            self.skipTest(f"Real gemma3:270m chat test failed: {e}")
 
 
 if __name__ == '__main__':

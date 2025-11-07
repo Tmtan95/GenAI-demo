@@ -5,13 +5,14 @@ This module implements a simple but effective RAG system using:
 - sentence-transformers for embeddings (bge-large-en-v1.5)
 - FAISS for vector similarity search
 - PyPDF2 for PDF text extraction
-- Ollama phi3:mini for text generation
+- Ollama gemma3:270m for text generation
 
 Features:
 - High-quality embeddings for better semantic understanding
 - Handles large PDFs (15MB+)
 - Offline operation (after initial model download)
 - Optimized for technical documents and research papers
+- Ultra-lightweight model (270M parameters) for fast responses
 """
 
 import os
@@ -299,7 +300,7 @@ ANSWER:"""
             # Get response from Ollama
             print("🤔 Generating answer...")
             response = ollama.chat(
-                model='phi3:mini',
+                model='gemma3:270m',
                 messages=[{'role': 'user', 'content': prompt}]
             )
             

@@ -94,7 +94,7 @@ def chat():
             
             # Get AI response
             print("🤖 AI: ", end="", flush=True)
-            response = ollama.chat(model='phi3:mini', messages=conversation)
+            response = ollama.chat(model='gemma3:270m', messages=conversation)
             ai_response = response['message']['content']
             
             # Print AI response
