@@ -28,9 +28,9 @@ class RAGSystem:
     def __init__(self, documents_folder: str = "documents", cache_folder: str = "cache"):
         self.documents_folder = documents_folder
         self.cache_folder = cache_folder
-        self.chunk_size = 500  # Characters per chunk
-        self.chunk_overlap = 50  # Overlap between chunks
-        self.top_k = 3  # Number of relevant chunks to retrieve
+        self.chunk_size = 1000  # Characters per chunk (increased for better context)
+        self.chunk_overlap = 200  # Overlap between chunks (increased proportionally)
+        self.top_k = 5  # Number of relevant chunks to retrieve (increased to find more matches)
         
         # Initialize components
         self.embeddings_model = None
@@ -82,6 +82,21 @@ class RAGSystem:
                 if file.lower().endswith('.pdf'):
                     pdf_files.append(os.path.join(self.documents_folder, file))
         return pdf_files
+    
+    def inspect_chunks(self, max_chunks: int = 10):
+        """Inspect what chunks are stored (useful for debugging)"""
+        if not self.chunks:
+            print("❌ No chunks loaded. Process documents first.")
+            return
+        
+        print(f"\n📊 Total chunks: {len(self.chunks)}")
+        print(f"📏 Showing first {min(max_chunks, len(self.chunks))} chunks:\n")
+        
+        for i, chunk_meta in enumerate(self.chunk_metadata[:max_chunks], 1):
+            print(f"--- Chunk {i} ---")
+            print(f"Source: {chunk_meta['source']}")
+            print(f"Text: {chunk_meta['text'][:150]}...")
+            print()
     
     def _extract_text_from_pdf(self, pdf_path: str) -> str:
         """Extract text from PDF file"""
@@ -266,11 +281,20 @@ class RAGSystem:
             print(f"❌ Error retrieving chunks: {e}")
             return []
     
-    def query(self, question: str) -> str:
+    def query(self, question: str, debug: bool = False) -> str:
         """Answer a question using RAG"""
         try:
             # Retrieve relevant context
             relevant_chunks = self._retrieve_relevant_chunks(question)
+            
+            # Debug mode: Show what was retrieved
+            if debug:
+                print(f"\n🔍 DEBUG: Found {len(relevant_chunks)} relevant chunks")
+                for i, chunk in enumerate(relevant_chunks, 1):
+                    print(f"\n--- Chunk {i} (Score: {chunk['similarity_score']:.4f}) ---")
+                    print(f"Source: {chunk['source']}")
+                    print(f"Text preview: {chunk['text'][:200]}...")
+                print("\n" + "="*50 + "\n")
             
             if not relevant_chunks:
                 return "❌ No relevant information found in the documents."
